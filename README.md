@@ -1,328 +1,135 @@
-📌 Projeto de Data Warehouse (DW) para Análise de Vendas
-
-
+# Projeto de Data Warehouse (DW) para Análise de Vendas
 
 Este projeto foi desenvolvido com o objetivo de demonstrar a construção de um ecossistema de Business Intelligence baseado em SQL Server — desde o banco transacional até o consumo no Power BI.
 
+---
 
-
-🎯 Objetivo do Projeto
-
-
+## Objetivo do Projeto
 
 Demonstrar capacidade prática em:
 
-
-
-* ETL
-
-
-
-* Construção de Stage
-
-
-
-* Modelagem Dimensional
-
-
-
-* Criação de DataMart/Data Warehouse
-
-
-
-* Cargas automáticas
-
-
-
-* Transformação de dados
-
-
-
-* Integração com Power BI
-
-
-
-* Boas práticas de organização e versionamento
-
-
-
-
-
-
-
-
-
-\## 📌 Arquitetura Geral do Projeto
-
-
-
-```mermaid
-
-flowchart TD
-
-&nbsp;   A\[BANCO TRANSACIONAL<br>(backup .bak não anexado)] --> B\[STAGE<br>(Staging Area)]
-
-&nbsp;   B --> C\[DATA WAREHOUSE<br>(DW)]
-
-&nbsp;   C --> D\[POWER BI<br>(Modelo Estrela)]
-
-
-
-
-
-
-
-
-
-1\. Stage – Extração e Tratamento Inicial
-
-
-
-Processo de carga do Stage contempla:
-
-
-
-* Transporte dos dados do banco transacional para o Stage
-
-
-
-* Validação dos schemas
-
-
-
-* Criação automática das tabelas caso sejam excluídas
-
-
-
-* Procedimentos que limpam (TRUNCATE) e repopulam (INSERT INTO) o Stage
-
-
-
-* Preparação dos dados brutos para alimentar dimensões e fato
-
-
-
-
-
-
-
-
-
-Funcionalidades utilizadas no Stage:
-
-
-
-* JOINs
-
-
-
-* CTEs
-
-
-
-* Tabelas temporárias
-
-
-
-* Subqueries
-
-
-
-* INSERT / UPDATE
-
-
-
-* MERGE
-
-
-
-* Normalização de dados (ex.: PascalCase, tratamento de nulos - ISNULL)
-
-
-
-* Validação automática de schema e recriação de tabelas do Stage quando necessário.
-
-
-
-Exemplo real utilizado no projeto para garantir que a tabela do Stage (neste caso, a D\_Vendedores) exista, recriando-a automaticamente caso tenha sido excluída:
-
-
-
-
-
-
-
-IF OBJECT\_ID('ST\_VENDEDORES') IS NULL
-
+- ETL  
+- Construção de Stage  
+- Modelagem Dimensional  
+- Criação de DataMart/Data Warehouse  
+- Cargas automáticas  
+- Transformação de dados  
+- Integração com Power BI  
+- Boas práticas de organização e versionamento  
+
+---
+
+## Arquitetura Geral do Projeto
+
+**BANCO TRANSACIONAL**  
+(.bak com dados fictícios de ambiente de homologação — não anexado por questões de tamanho)  
+⬇️  
+**STAGE (Staging Area)**  
+⬇️  
+**DATA WAREHOUSE (DW)**  
+⬇️  
+**POWER BI (Modelo Estrela)**
+
+---
+
+## 1. Stage – Extração e Tratamento Inicial
+
+O processo de carga do Stage contempla:
+
+- Transporte dos dados do banco transacional para o Stage  
+- Validação dos schemas  
+- Criação automática das tabelas caso sejam excluídas  
+- Procedimentos que limpam (TRUNCATE) e repopulam (INSERT INTO) o Stage  
+- Preparação dos dados brutos para alimentar dimensões e fato  
+
+### Funcionalidades utilizadas no Stage
+
+- JOINs  
+- CTEs  
+- Tabelas temporárias  
+- Subqueries  
+- INSERT / UPDATE  
+- MERGE  
+- Normalização de dados (ex.: PascalCase e tratamento de nulos com `ISNULL`)  
+- Validação automática de schema e recriação de tabelas quando necessário  
+
+### Exemplo real utilizado no projeto
+
+```sql
+IF OBJECT_ID('ST_VENDEDORES') IS NULL
 BEGIN
-
-    CREATE TABLE ST\_VENDEDORES
-
-    (
-
-        COD\_VENDEDOR NUMERIC(15),
-
-        NOME VARCHAR(100)
-
-    )
-
+    CREATE TABLE ST_VENDEDORES
+    (
+        COD_VENDEDOR NUMERIC(15),
+        NOME VARCHAR(100)
+    )
 END
 
 
-
-
-
-2\. Criação do Data Warehouse (DW)
-
-
-
-
-
-O DW segue o padrão de modelo estrela, contendo:
-
-
-
-
+2. Criação do Data Warehouse (DW)
+O Data Warehouse foi desenvolvido seguindo o padrão de modelo estrela, contendo:
 
 Tabelas Dimensão
+- D_CLIENTE
 
+- D_EMPRESAS
 
+- D_PRODUTOS
 
-D\_CLIENTE
+- D_VENDEDORES
 
-
-
-D\_EMPRESAS
-
-
-
-D\_PRODUTOS
-
-
-
-D\_VENDEDORES
-
-
-
-D\_CALENDARIO (gerada por função auxiliar)
-
-
-
-
+- D_CALENDARIO (gerada por função auxiliar)
 
 Tabela Fato
-
-
-
-F\_VENDAS
-
-
-
-
+- F_VENDAS
 
 As dimensões foram normalizadas e preparadas para análises:
 
+- Tratamento de campos nulos
 
+- Remoção de duplicidades
 
-* Tratamento de campos nulos
+- Padronização de texto
 
+Recursos utilizados na construção do DW
+MERGE para atualizações inteligentes
 
+- VIEWS de apoio
 
-* Remoção de duplicidades
+- Criação de variáveis
 
+- Função para montar D_CALENDARIO
 
+- Procedures automáticas de carga FULL das dimensões
 
-* Padronização de texto
+- Procedures de carga incremental da tabela fato
 
-
-
-
-
-Recursos utilizados na construção do DW:
-
-
-
-* MERGE para atualizações inteligentes
-
-
-
-* VIEWS de apoio
-
-
-
-* Criação de variáveis
-
-
-
-* Função para montar D\_CALENDARIO
-
-
-
-* Procedures automáticas de carga FULL das dimensões
-
-
-
-* Procedures de carga incremental para a fato
-
-
-
-
-
-3\. Automatização da Carga:
-
-
+3. Automatização da Carga
 
 O projeto inclui:
 
+- Procedures automatizadas para cargas completas e incrementais
 
+- Documentação da estrutura de Jobs no SQL Server Agent
+(o agendamento não é executado no ambiente gratuito, mas está descrito conceitualmente)
 
-* Procedures automatizadas para cargas completas e incrementais
+4. Integração com Power BI
+- Conexão direta ao DW
 
+- Transformação da tabela D_CALENDARIO no Power Query, tornando-a dinâmica conforme as datas de F_VENDAS
 
+- Modelo estrela completo
 
-* SQL Server Agent para agendamento dos Jobs que, por requerer versão paga, o processo é documentado conceitualmente.
+- Relacionamentos configurados entre fato e dimensões
 
+- Criação de medidas DAX
 
+- Visualizações analíticas (em desenvolvimento)
 
-
-
-4\. Integração com Power BI
-
-
-
-* O DW foi conectado posteriormente ao Power BI, onde houve, através do Power Query, transformação da D\_Calendário para torná-la dinâmica, a depender das datas do campo Movimento da tabela F\_vendas
-
-
-
-* Modelo estrela completo
-
-
-
-* Relacionamentos corretos entre fato e dimensões
-
-
-
-* Criação de medidas DAX
-
-
-
-* Visualizações analíticas (em desenvolvimento)
-
-
-
-* O arquivo .pbix será adicionado na pasta /powerbi.
-
-
+- O arquivo .pbix será disponibilizado na pasta /powerbi
 
 Estrutura do Repositório
-
-
-
-/scripts\_stage – Scripts SQL com criação e carga do transacional para Stage e criação de views. Tratamento dos dados.
-
-/scripts\_dw – Scripts SQL de tabelas de dimensões e fatos vindas do Stage. Merge das tabelas. D\_Calendário.
-
-/powerbi – Arquivo .pbix com o modelo dimensional
-
-/diagramas – Diagramas do modelo
-
+/scripts_stage  → Scripts SQL com criação e carga do transacional para Stage; criação de views e tratamentos.
+/scripts_dw     → Scripts SQL das dimensões, fatos, merges e tabela calendário.
+/powerbi        → Arquivo .pbix com o modelo dimensional.
+/diagramas      → Diagramas do modelo (opcional).
