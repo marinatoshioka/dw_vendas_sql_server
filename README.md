@@ -63,10 +63,11 @@ BEGIN
         COD_VENDEDOR NUMERIC(15),
         NOME VARCHAR(100)
     )
-END ```
+END 
+```
 
 
-2. Criação do Data Warehouse (DW)
+## 2. Criação do Data Warehouse (DW)
 O Data Warehouse foi desenvolvido seguindo o padrão de modelo estrela, contendo:
 
 Tabelas Dimensão
@@ -104,7 +105,7 @@ MERGE para atualizações inteligentes
 
 - Procedures de carga incremental da tabela fato
 
-3. Automatização da Carga
+## 3. Automatização da Carga
 
 O projeto inclui:
 
@@ -113,7 +114,7 @@ O projeto inclui:
 - Documentação da estrutura de Jobs no SQL Server Agent
 (o agendamento não é executado no ambiente gratuito, mas está descrito conceitualmente)
 
-4. Integração com Power BI
+## 4. Integração com Power BI
 - Conexão direta ao DW
 
 - Transformação da tabela D_CALENDARIO no Power Query, tornando-a dinâmica conforme as datas de F_VENDAS
@@ -128,7 +129,7 @@ O projeto inclui:
 
 - O arquivo .pbix será disponibilizado na pasta /powerbi
 
-Estrutura do Repositório
+## Estrutura do Repositório
 /scripts_stage  → Scripts SQL com criação e carga do transacional para Stage; criação de views e tratamentos.
 /scripts_dw     → Scripts SQL das dimensões, fatos, merges e tabela calendário.
 /powerbi        → Arquivo .pbix com o modelo dimensional.
