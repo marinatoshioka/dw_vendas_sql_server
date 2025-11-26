@@ -63,7 +63,7 @@ BEGIN
         COD_VENDEDOR NUMERIC(15),
         NOME VARCHAR(100)
     )
-END
+END ```
 
 
 2. Criação do Data Warehouse (DW)
