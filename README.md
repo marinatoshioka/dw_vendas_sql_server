@@ -14,7 +14,7 @@ Demonstrar capacidade prática em:
 
 
 
-* ETL 
+* ETL
 
 
 
@@ -52,29 +52,21 @@ Demonstrar capacidade prática em:
 
 
 
-📌 Arquitetura Geral do Projeto
+\## 📌 Arquitetura Geral do Projeto
 
 
 
-BANCO TRANSACIONAL (.bak com dados de ambiente de homologação/fictícios, não anexado por questões de tamanho)
+```mermaid
 
-&nbsp;       │
+flowchart TD
 
-&nbsp;       ▼
+&nbsp;   A\[BANCO TRANSACIONAL<br>(backup .bak não anexado)] --> B\[STAGE<br>(Staging Area)]
 
-&nbsp;    STAGE (Staging Area)
+&nbsp;   B --> C\[DATA WAREHOUSE<br>(DW)]
 
-&nbsp;       │
+&nbsp;   C --> D\[POWER BI<br>(Modelo Estrela)]
 
-&nbsp;       ▼
 
-&nbsp;DATA WAREHOUSE (DW)
-
-&nbsp;       │
-
-&nbsp;       ▼
-
-&nbsp;  POWER BI (Modelo Estrela)
 
 
 
@@ -112,6 +104,10 @@ Processo de carga do Stage contempla:
 
 
 
+
+
+
+
 Funcionalidades utilizadas no Stage:
 
 
@@ -144,7 +140,7 @@ Funcionalidades utilizadas no Stage:
 
 
 
-* Validação automática de schema e recriação de tabelas do Stage quando necessário. 
+* Validação automática de schema e recriação de tabelas do Stage quando necessário.
 
 
 
@@ -152,19 +148,23 @@ Exemplo real utilizado no projeto para garantir que a tabela do Stage (neste cas
 
 
 
+
+
+
+
 IF OBJECT\_ID('ST\_VENDEDORES') IS NULL
 
 BEGIN
 
-&nbsp;   CREATE TABLE ST\_VENDEDORES
+    CREATE TABLE ST\_VENDEDORES
 
-&nbsp;   (
+    (
 
-&nbsp;       COD\_VENDEDOR NUMERIC(15),
+        COD\_VENDEDOR NUMERIC(15),
 
-&nbsp;       NOME VARCHAR(100)
+        NOME VARCHAR(100)
 
-&nbsp;   )
+    )
 
 END
 
@@ -320,13 +320,9 @@ Estrutura do Repositório
 
 /scripts\_stage – Scripts SQL com criação e carga do transacional para Stage e criação de views. Tratamento dos dados.
 
-/scripts\_dw – Scripts SQL de tabelas de dimensões e fatos vindas do Stage. Merge das tabelas. D\_Calendário. 
+/scripts\_dw – Scripts SQL de tabelas de dimensões e fatos vindas do Stage. Merge das tabelas. D\_Calendário.
 
-/powerbi – Arquivo .pbix com o modelo dimensional  
+/powerbi – Arquivo .pbix com o modelo dimensional
 
-/diagramas – Diagramas do modelo  
-
-
-
-
+/diagramas – Diagramas do modelo
 
